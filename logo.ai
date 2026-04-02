@@ -1,0 +1,50 @@
+{
+    "name": "Romance AniList",
+    "short_name": "AniList",
+    "start_url": "/index.html",
+    "display": "standalone",
+    "background_color": "#fff8fb",
+    "theme_color": "#f47ca6",
+    "description": "A simple progressive web app for browsing romance anime.",
+    "icons": [
+        {
+            "src": "/static/icons/icon-128x128.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-384x384.png",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/static/icons/desktop_screenshot.png",
+            "sizes": "1920x1080",
+            "type": "image/png",
+            "form_factor": "wide",
+            "label": "Desktop catalogue screenshot"
+        },
+        {
+            "src": "/static/icons/mobile_screenshot.png",
+            "sizes": "1080x1920",
+            "type": "image/png",
+            "label": "Mobile catalogue screenshot"
+        }
+    ]
+}

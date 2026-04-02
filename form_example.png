@@ -1,0 +1,256 @@
+import sqlite3
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
+DATABASE_PATH = BASE_DIR / 'database' / 'data_source.db'
+SCHEMA_PATH = BASE_DIR / 'database' / 'setup.sql'
+
+SEED_ANIME = [
+    {
+        'slug': 'horimiya',
+        'title': 'Horimiya',
+        'genre': 'School Romance',
+        'watch_season': 'Spring',
+        'tone': 'Warm & funny',
+        'format': 'TV Series',
+        'year_label': 'Modern classic',
+        'poster_path': 'images/poster-horimiya.svg',
+        'short_blurb': 'A sweet high-school romance where private selves matter more than first impressions.',
+        'synopsis': 'Popular Hori and quiet Miyamura discover that both of them hide sides of themselves at school. As they grow closer, their relationship becomes a gentle story about honesty, friendship, and finding comfort in being fully known.',
+    },
+    {
+        'slug': 'toradora',
+        'title': 'Toradora!',
+        'genre': 'School Romance',
+        'watch_season': 'Winter',
+        'tone': 'Chaotic & heartfelt',
+        'format': 'TV Series',
+        'year_label': 'Classic pick',
+        'poster_path': 'images/poster-toradora.svg',
+        'short_blurb': 'A classic enemies-to-allies romance with big emotions and even bigger misunderstandings.',
+        'synopsis': 'Ryuuji and Taiga look like total opposites, but an awkward alliance slowly turns into genuine care. The story balances comedy, messy feelings, and emotional growth as both leads learn what love actually asks of them.',
+    },
+    {
+        'slug': 'fruits-basket',
+        'title': 'Fruits Basket',
+        'genre': 'Drama Romance',
+        'watch_season': 'Autumn',
+        'tone': 'Healing & emotional',
+        'format': 'TV Series',
+        'year_label': 'Character driven',
+        'poster_path': 'images/poster-fruits-basket.svg',
+        'short_blurb': 'A tender romance wrapped inside family secrets, kindness, and long-term healing.',
+        'synopsis': 'After losing her home, Tohru becomes involved with the mysterious Sohma family. What starts as a strange setup grows into a moving story about trauma, compassion, and the courage it takes to love people who are still learning how to heal.',
+    },
+    {
+        'slug': 'kimi-ni-todoke',
+        'title': 'Kimi ni Todoke',
+        'genre': 'Slice of Life',
+        'watch_season': 'Spring',
+        'tone': 'Soft & sincere',
+        'format': 'TV Series',
+        'year_label': 'Slow-burn romance',
+        'poster_path': 'images/poster-kimi-ni-todoke.svg',
+        'short_blurb': 'A slow-burn story about a shy girl learning connection, confidence, and first love.',
+        'synopsis': 'Sawako struggles with rumours and social distance, but her world begins to open when Kazehaya reaches out with simple kindness. The series is gentle, patient, and perfect for anyone who likes character growth with their romance.',
+    },
+    {
+        'slug': 'wotakoi',
+        'title': 'Wotakoi: Love is Hard for Otaku',
+        'genre': 'Workplace Romance',
+        'watch_season': 'Summer',
+        'tone': 'Light & geeky',
+        'format': 'TV Series',
+        'year_label': 'Easy watch',
+        'poster_path': 'images/poster-wotakoi.svg',
+        'short_blurb': 'Adult romance, office humour, and shared hobbies make this one easy to love.',
+        'synopsis': 'Narumi and Hirotaka reconnect as working adults and discover that dating may be easier when the other person already understands your niche interests. It is playful, low-stress, and full of charming group dynamics.',
+    },
+    {
+        'slug': 'your-lie-in-april',
+        'title': 'Your Lie in April',
+        'genre': 'Drama Romance',
+        'watch_season': 'Autumn',
+        'tone': 'Bittersweet & artistic',
+        'format': 'TV Series',
+        'year_label': 'Music-heavy',
+        'poster_path': 'images/poster-your-lie-in-april.svg',
+        'short_blurb': 'Music, love, and grief collide in a romance that hits hard emotionally.',
+        'synopsis': 'A gifted pianist who has lost his spark is pulled back toward music by an energetic violinist. The result is a vivid story about creativity, memory, and the kind of connection that changes a person permanently.',
+    },
+    {
+        'slug': 'my-love-story',
+        'title': 'My Love Story!!',
+        'genre': 'Comedy Romance',
+        'watch_season': 'Summer',
+        'tone': 'Joyful & wholesome',
+        'format': 'TV Series',
+        'year_label': 'Comfort watch',
+        'poster_path': 'images/poster-my-love-story.svg',
+        'short_blurb': 'A wholesome romance that proves sincerity can be just as exciting as drama.',
+        'synopsis': 'Takeo is huge, kind, and used to being overlooked, so romance feels impossible until Yamato enters his life. This series is upbeat and refreshing because it lets the central couple be openly caring without endless cynicism.',
+    },
+    {
+        'slug': 'snow-white-with-the-red-hair',
+        'title': 'Snow White with the Red Hair',
+        'genre': 'Fantasy Romance',
+        'watch_season': 'Winter',
+        'tone': 'Calm & inspiring',
+        'format': 'TV Series',
+        'year_label': 'Fantasy pick',
+        'poster_path': 'images/poster-snow-white.svg',
+        'short_blurb': 'A fantasy romance built on respect, ambition, and mutual support.',
+        'synopsis': 'Shirayuki chooses independence over being controlled, and her path crosses with Prince Zen. Their relationship grows through trust and shared effort, creating a romance that feels uplifting rather than rushed.',
+    },
+    {
+        'slug': 'ao-haru-ride',
+        'title': 'Ao Haru Ride',
+        'genre': 'School Romance',
+        'watch_season': 'Spring',
+        'tone': 'Reflective & tender',
+        'format': 'TV Series',
+        'year_label': 'Second-chance feel',
+        'poster_path': 'images/poster-ao-haru-ride.svg',
+        'short_blurb': 'A reunion romance about change, memory, and the awkwardness of trying again.',
+        'synopsis': 'Futaba reunites with a boy from her past only to find that both of them have changed. The series leans into emotional hesitation and quiet reflection, making each step forward feel earned.',
+    },
+    {
+        'slug': 'lovely-complex',
+        'title': 'Lovely★Complex',
+        'genre': 'Comedy Romance',
+        'watch_season': 'Summer',
+        'tone': 'Loud & lovable',
+        'format': 'TV Series',
+        'year_label': 'Comedy favourite',
+        'poster_path': 'images/poster-lovely-complex.svg',
+        'short_blurb': 'A fun height-difference rom-com that mixes sharp banter with real vulnerability.',
+        'synopsis': 'Risa and Otani constantly tease each other, but their comic chemistry slowly reveals deeper affection. The story is energetic and funny while still taking insecurity and self-image seriously.',
+    },
+]
+
+SEED_FAQS = [
+    {
+        'question': 'What can I do in this PWA?',
+        'answer': 'You can browse the romance anime catalogue, search by title, and filter entries by genre or watch season. Each card opens a dedicated detail page with a fuller summary.'
+    },
+    {
+        'question': 'Does it work offline?',
+        'answer': 'Yes. The service worker caches the core pages, styling, scripts, and poster assets so the app still opens even when you lose connection.'
+    },
+    {
+        'question': 'Can I save favourites?',
+        'answer': 'Yes. Tap the Save button on a card or detail page and the app stores that favourite in your browser using local storage.'
+    },
+]
+
+
+def get_connection() -> sqlite3.Connection:
+    con = sqlite3.connect(DATABASE_PATH)
+    con.row_factory = sqlite3.Row
+    return con
+
+
+
+def init_db() -> None:
+    DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    with get_connection() as con:
+        con.executescript(SCHEMA_PATH.read_text(encoding='utf-8'))
+        anime_count = con.execute('SELECT COUNT(*) FROM anime').fetchone()[0]
+        faq_count = con.execute('SELECT COUNT(*) FROM faq').fetchone()[0]
+
+        if anime_count == 0:
+            con.executemany(
+                '''
+                INSERT INTO anime (
+                    slug, title, genre, watch_season, tone,
+                    format, year_label, poster_path, short_blurb, synopsis
+                ) VALUES (
+                    :slug, :title, :genre, :watch_season, :tone,
+                    :format, :year_label, :poster_path, :short_blurb, :synopsis
+                )
+                ''',
+                SEED_ANIME,
+            )
+
+        if faq_count == 0:
+            con.executemany(
+                'INSERT INTO faq (question, answer) VALUES (:question, :answer)',
+                SEED_FAQS,
+            )
+
+
+
+def get_featured_anime(limit: int = 4):
+    with get_connection() as con:
+        rows = con.execute(
+            'SELECT * FROM anime ORDER BY id ASC LIMIT ?',
+            (limit,),
+        ).fetchall()
+    return rows
+
+
+
+def get_unique_values(column_name: str):
+    allowed = {'genre', 'watch_season'}
+    if column_name not in allowed:
+        raise ValueError('Unsupported column name.')
+
+    with get_connection() as con:
+        rows = con.execute(
+            f'SELECT DISTINCT {column_name} FROM anime ORDER BY {column_name} ASC'
+        ).fetchall()
+    return [row[0] for row in rows]
+
+
+
+def search_anime(query: str = '', genre: str = '', season: str = ''):
+    sql = 'SELECT * FROM anime WHERE 1=1'
+    params = []
+
+    if query:
+        sql += ' AND (title LIKE ? OR short_blurb LIKE ? OR synopsis LIKE ?)'
+        like_query = f'%{query}%'
+        params.extend([like_query, like_query, like_query])
+
+    if genre:
+        sql += ' AND genre = ?'
+        params.append(genre)
+
+    if season:
+        sql += ' AND watch_season = ?'
+        params.append(season)
+
+    sql += ' ORDER BY title COLLATE NOCASE ASC'
+
+    with get_connection() as con:
+        rows = con.execute(sql, params).fetchall()
+    return rows
+
+
+
+def get_anime_by_slug(slug: str):
+    with get_connection() as con:
+        row = con.execute('SELECT * FROM anime WHERE slug = ?', (slug,)).fetchone()
+    return row
+
+
+
+def get_related_anime(slug: str, genre: str, limit: int = 3):
+    with get_connection() as con:
+        rows = con.execute(
+            '''
+            SELECT * FROM anime
+            WHERE slug != ? AND genre = ?
+            ORDER BY title COLLATE NOCASE ASC
+            LIMIT ?
+            ''',
+            (slug, genre, limit),
+        ).fetchall()
+    return rows
+
+
+
+def get_faqs():
+    with get_connection() as con:
+        rows = con.execute('SELECT * FROM faq ORDER BY id ASC').fetchall()
+    return rows

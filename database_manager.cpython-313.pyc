@@ -1,0 +1,37 @@
+{% extends 'layout.html' %}
+{% block title %}Home | Romance AniList{% endblock %}
+{% block content %}
+<section class="section-block compact-top">
+    <h2>Simple romance anime catalogue</h2>
+    <p class="section-note">Browse a small list of romance anime and open each title for more details.</p>
+    <div class="card-actions top-gap">
+        <a class="primary-link" href="{{ url_for('catalogue') }}">Open catalogue</a>
+        <a class="secondary-link" href="{{ url_for('faq') }}">Open FAQ</a>
+    </div>
+</section>
+
+<section class="section-block">
+    <div class="section-heading simple-heading">
+        <h3>Featured titles</h3>
+        <a class="text-link" href="{{ url_for('catalogue') }}">View all</a>
+    </div>
+
+    <div class="simple-list">
+        {% for item in featured %}
+            <article class="anime-card simple-card">
+                <div class="anime-card-body">
+                    <h3>{{ item['title'] }}</h3>
+                    <p>{{ item['short_blurb'] }}</p>
+                    <div class="meta-row">
+                        <span>{{ item['genre'] }}</span>
+                        <span>{{ item['watch_season'] }}</span>
+                    </div>
+                    <div class="card-actions">
+                        <a class="ghost-link" href="{{ url_for('anime_detail', slug=item['slug']) }}">View details</a>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

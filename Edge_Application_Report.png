@@ -1,0 +1,3 @@
+SELECT title, genre, watch_season FROM anime ORDER BY title;
+SELECT title, tone FROM anime WHERE watch_season = 'Summer';
+SELECT title FROM anime WHERE genre = 'School Romance';

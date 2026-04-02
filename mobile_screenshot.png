@@ -1,0 +1,69 @@
+from flask import Flask, abort, render_template, request
+import database_manager as db
+
+app = Flask(__name__)
+db.init_db()
+
+
+@app.route('/', methods=['GET'])
+@app.route('/index.html', methods=['GET'])
+def home():
+    featured = db.get_featured_anime(limit=4)
+    genres = db.get_unique_values('genre')
+    seasons = db.get_unique_values('watch_season')
+    return render_template(
+        'index.html',
+        featured=featured,
+        genres=genres,
+        seasons=seasons,
+    )
+
+
+@app.route('/catalogue.html', methods=['GET'])
+def catalogue():
+    filters = {
+        'q': request.args.get('q', '').strip(),
+        'genre': request.args.get('genre', '').strip(),
+        'season': request.args.get('season', '').strip(),
+    }
+    anime = db.search_anime(
+        query=filters['q'],
+        genre=filters['genre'],
+        season=filters['season'],
+    )
+    return render_template(
+        'catalogue.html',
+        anime=anime,
+        filters=filters,
+        genres=db.get_unique_values('genre'),
+        seasons=db.get_unique_values('watch_season'),
+    )
+
+
+@app.route('/anime/<slug>.html', methods=['GET'])
+def anime_detail(slug):
+    anime = db.get_anime_by_slug(slug)
+    if anime is None:
+        abort(404)
+    related = db.get_related_anime(slug=slug, genre=anime['genre'])
+    return render_template('detail.html', anime=anime, related=related)
+
+
+@app.route('/faq.html', methods=['GET'])
+def faq():
+    faqs = db.get_faqs()
+    return render_template('faq.html', faqs=faqs)
+
+
+@app.route('/offline.html', methods=['GET'])
+def offline():
+    return render_template('offline.html')
+
+
+@app.errorhandler(404)
+def page_not_found(_error):
+    return render_template('404.html'), 404
+
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0', port=5000)

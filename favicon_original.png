@@ -1,0 +1,94 @@
+const STATIC_CACHE = 'romance-anilist-static-v1';
+const RUNTIME_CACHE = 'romance-anilist-runtime-v1';
+
+const APP_SHELL = [
+    '/',
+    '/index.html',
+    '/catalogue.html',
+    '/faq.html',
+    '/offline.html',
+    '/static/css/style.css',
+    '/static/js/app.js',
+    '/static/images/logo.png',
+    '/static/images/favicon.png',
+    '/static/icons/icon-128x128.png',
+    '/static/icons/icon-192x192.png',
+    '/static/icons/icon-384x384.png',
+    '/static/icons/icon-512x512.png',
+    '/static/icons/desktop_screenshot.png',
+    '/static/icons/mobile_screenshot.png',
+    '/static/images/poster-horimiya.svg',
+    '/static/images/poster-toradora.svg',
+    '/static/images/poster-fruits-basket.svg',
+    '/static/images/poster-kimi-ni-todoke.svg',
+    '/static/images/poster-wotakoi.svg',
+    '/static/images/poster-your-lie-in-april.svg',
+    '/static/images/poster-my-love-story.svg',
+    '/static/images/poster-snow-white.svg',
+    '/static/images/poster-ao-haru-ride.svg',
+    '/static/images/poster-lovely-complex.svg',
+];
+
+self.addEventListener('install', (event) => {
+    event.waitUntil(
+        caches.open(STATIC_CACHE).then((cache) => cache.addAll(APP_SHELL))
+    );
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', (event) => {
+    event.waitUntil(
+        caches.keys().then((keys) => Promise.all(
+            keys
+                .filter((key) => ![STATIC_CACHE, RUNTIME_CACHE].includes(key))
+                .map((key) => caches.delete(key))
+        ))
+    );
+    self.clients.claim();
+});
+
+self.addEventListener('fetch', (event) => {
+    const { request } = event;
+
+    if (request.method !== 'GET') {
+        return;
+    }
+
+    const requestUrl = new URL(request.url);
+    const isSameOrigin = requestUrl.origin === self.location.origin;
+    const isPageRequest = request.headers.get('accept')?.includes('text/html');
+
+    if (!isSameOrigin) {
+        return;
+    }
+
+    if (isPageRequest) {
+        event.respondWith(
+            fetch(request)
+                .then((response) => {
+                    const clone = response.clone();
+                    caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, clone));
+                    return response;
+                })
+                .catch(async () => {
+                    const cached = await caches.match(request);
+                    return cached || caches.match('/offline.html');
+                })
+        );
+        return;
+    }
+
+    event.respondWith(
+        caches.match(request).then((cached) => {
+            if (cached) {
+                return cached;
+            }
+
+            return fetch(request).then((response) => {
+                const clone = response.clone();
+                caches.open(RUNTIME_CACHE).then((cache) => cache.put(request, clone));
+                return response;
+            });
+        })
+    );
+});
